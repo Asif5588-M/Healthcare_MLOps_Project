@@ -1,0 +1,16 @@
+pandas
+numpy
+scikit-learn
+matplotlib
+seaborn
+flask
+fastapi
+uvicorn
+streamlit
+mlflow
+dvc
+dvc-gdrive
+kaggle
+python-dotenv
+pyyaml
+-e .

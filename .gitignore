@@ -1,0 +1,14 @@
+.venv/
+miniconda*/
+anaconda*/
+env/
+__pycache__/
+*.pyc
+.pytest_cache/
+artifacts/
+data/
+.dvc/
+mlruns/
+.kaggle/
+*.json
+.env
