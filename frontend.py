@@ -1,6 +1,5 @@
-import streamlit as pd
 import streamlit as st
-import requests
+from src.pipeline.prediction_pipeline import PredictionPipeline
 
 # Page UI configurations
 st.set_page_config(
@@ -11,7 +10,7 @@ st.set_page_config(
 
 st.title("🏥 Patient Health Diagnostic Portal")
 st.markdown("### Real-time Machine Learning Classification Diagnostics")
-st.write("Input patient laboratory metrics below to securely fetch diagnostic predictions from our FastAPI microservice backend framework.")
+st.write("Input patient laboratory metrics below to securely fetch diagnostic predictions directly from our integrated MLOps inference pipeline.")
 
 st.markdown("---")
 
@@ -38,39 +37,34 @@ with st.form("diagnostic_entry_form"):
 
 # When the user submits the metrics
 if submit_button:
-    # Packaging request body structural JSON schema to match FastAPI specifications
-    payload = {
-        "pregnancies": pregnancies,
-        "glucose": glucose,
-        "blood_pressure": blood_pressure,
-        "skin_thickness": skin_thickness,
-        "insulin": insulin,
-        "bmi": bmi,
-        "diabetes_pedigree": diabetes_pedigree,
-        "age": age
-    }
-    
-    # Target endpoint URL mapping
-    API_URL = "http://127.0.0"
+    # Packaging request features list for direct prediction pipeline execution
+    features_list = [
+        pregnancies,
+        glucose,
+        blood_pressure,
+        skin_thickness,
+        insulin,
+        bmi,
+        diabetes_pedigree,
+        age
+    ]
     
     try:
-        with st.spinner("Communicating with model server endpoints... Please wait."):
-            response = requests.post(API_URL, json=payload)
+        with st.spinner("Executing live inference layer models... Please wait."):
+            # Invoking prediction pipeline directly (Cloud Architecture Alignment)
+            pipeline = PredictionPipeline()
+            prediction_result = pipeline.predict(features_list)
             
-            if response.status_code == 200:
-                result_data = response.json()
-                diagnosis = result_data.get("diagnosis")
-                
-                st.markdown("---")
-                st.subheader("Diagnostic Evaluation Result")
-                
-                # Visual conditional rendering depending on classification output status
-                if diagnosis == "Diabetic":
-                    st.error(f"Prediction Alert: The patient is classified as **{diagnosis}**.")
-                else:
-                    st.success(f"Prediction Confirmed: The patient is classified as **{diagnosis}**.")
+            diagnosis = "Diabetic" if prediction_result == 1 else "Healthy"
+            
+            st.markdown("---")
+            st.subheader("Diagnostic Evaluation Result")
+            
+            # Visual conditional rendering depending on classification output status
+            if diagnosis == "Diabetic":
+                st.error(f"Prediction Alert: The patient is classified as **{diagnosis}**.")
             else:
-                st.error(f"API Error: Received invalid response status code {response.status_code}")
+                st.success(f"Prediction Confirmed: The patient is classified as **{diagnosis}**.")
                 
-    except requests.exceptions.ConnectionError:
-        st.error("Connection Error: Please ensure your FastAPI server (`app.py`) is running actively on port 8000!")
+    except Exception as e:
+        st.error(f"Inference Error: Runtime pipeline execution failed: {str(e)}")
