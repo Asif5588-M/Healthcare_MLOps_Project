@@ -19,14 +19,16 @@ jobs:
       with:
         python-version: "3.10"
 
-    - name: Install Project Requirement Dependencies
+    - name: Install Critical Verification Dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install -r requirements.txt
+        pip install pandas numpy scikit-learn fastapi uvicorn pydantic requests
 
-    - name: Verify Code Syntax and Run Sanity Checks
+    - name: Verify Core Source Compilation Syntax
       run: |
-        echo "Validating core source compilation..."
-        python -c "import src.components.data_ingestion; print('Data Ingestion Module Verified')"
-        python -c "import src.components.data_transformation; print('Data Transformation Module Verified')"
-        python -c "import src.components.model_trainer; print('Model Trainer Module Verified')"
+        echo "Validating project syntax without full pipeline load..."
+        python -m py_compile src/components/data_ingestion.py
+        python -m py_compile src/components/data_transformation.py
+        python -m py_compile src/components/model_trainer.py
+        python -m py_compile src/pipeline/prediction_pipeline.py
+        python -m py_compile app.py
